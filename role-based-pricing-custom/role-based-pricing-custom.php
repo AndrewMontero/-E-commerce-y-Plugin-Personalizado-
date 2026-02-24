@@ -23,3 +23,5 @@ if (!in_array('woocommerce/woocommerce.php', $active_plugins)) {
 require_once plugin_dir_path(__FILE__) . 'includes/activator.php';
 require_once plugin_dir_path(__FILE__) . 'includes/admin.php';
 require_once plugin_dir_path(__FILE__) . 'includes/pricing.php';
+
+register_activation_hook(__FILE__, 'rbpc_create_table');
