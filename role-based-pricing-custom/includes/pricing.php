@@ -1,52 +1,29 @@
 <?php
+/**
+ * Pricing Logic - Role Based Pricing
+ */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
+/*
+|--------------------------------------------------------------------------
+| Filtros principales de WooCommerce
+|--------------------------------------------------------------------------
+*/
+
 add_filter('woocommerce_product_get_price', 'rbpc_apply_role_price', 10, 2);
 add_filter('woocommerce_product_get_regular_price', 'rbpc_apply_role_price', 10, 2);
 add_filter('woocommerce_product_get_sale_price', 'rbpc_apply_role_price', 10, 2);
 
-// Para el carrito
-add_action('woocommerce_before_calculate_totals', 'rbpc_apply_role_price_cart');
+/*
+|--------------------------------------------------------------------------
+| Aplicar precio en carrito y checkout
+|--------------------------------------------------------------------------
+*/
 
-function rbpc_get_custom_price($product_id, $role)
-{
-    global $wpdb;
-    $table = $wpdb->prefix . 'role_prices';
-
-    return $wpdb->get_var(
-        $wpdb->prepare(
-            "SELECT price FROM $table WHERE product_id = %d AND role = %s",
-            $product_id,
-            $role
-        )
-    );
-}
-
-function rbpc_apply_role_price($price, $product)
-{
-
-    if (!is_user_logged_in()) {
-        return $price;
-    }
-
-    $user = wp_get_current_user();
-
-    if (empty($user->roles)) {
-        return $price;
-    }
-
-    $role = $user->roles[0];
-
-    $custom_price = rbpc_get_custom_price($product->get_id(), $role);
-
-    return $custom_price !== null ? $custom_price : $price;
-}
-
-function rbpc_apply_role_price_cart($cart)
-{
+add_action('woocommerce_before_calculate_totals', function ($cart) {
 
     if (is_admin() && !defined('DOING_AJAX')) {
         return;
@@ -62,17 +39,71 @@ function rbpc_apply_role_price_cart($cart)
         return;
     }
 
-    $role = $user->roles[0];
+    global $wpdb;
+    $table = $wpdb->prefix . 'role_prices';
 
     foreach ($cart->get_cart() as $cart_item) {
 
         $product = $cart_item['data'];
         $product_id = $product->get_id();
 
-        $custom_price = rbpc_get_custom_price($product_id, $role);
+        foreach ($user->roles as $role) {
 
-        if ($custom_price !== null) {
-            $product->set_price($custom_price);
+            $custom_price = $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT price FROM $table WHERE product_id = %d AND role = %s",
+                    $product_id,
+                    $role
+                )
+            );
+
+            if ($custom_price !== null && is_numeric($custom_price)) {
+                $product->set_price((float) $custom_price);
+                break; // detener si ya encontró precio válido
+            }
         }
     }
+
+}, 20);
+
+/*
+|--------------------------------------------------------------------------
+| Función principal para producto individual
+|--------------------------------------------------------------------------
+*/
+
+function rbpc_apply_role_price($price, $product)
+{
+
+    if (!is_user_logged_in()) {
+        return $price;
+    }
+
+    $user = wp_get_current_user();
+
+    if (empty($user->roles)) {
+        return $price;
+    }
+
+    global $wpdb;
+    $table = $wpdb->prefix . 'role_prices';
+
+    $product_id = $product->get_id();
+
+    foreach ($user->roles as $role) {
+
+        $custom_price = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT price FROM $table WHERE product_id = %d AND role = %s",
+                $product_id,
+                $role
+            )
+        );
+
+        if ($custom_price !== null && is_numeric($custom_price)) {
+            return (float) $custom_price;
+        }
+    }
+
+    return $price;
 }
