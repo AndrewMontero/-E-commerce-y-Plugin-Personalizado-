@@ -18,7 +18,7 @@ Bloquear la compra a usuarios no registrados.
 
 Crear automáticamente el rol "Solidarista".
 
-⚙️ Requisitos
+ Requisitos
 
 WordPress 6.x o superior
 
@@ -36,7 +36,7 @@ role-based-pricing-custom/
     ├── activator.php
     ├── admin.php
     └── pricing.php
-🗄 Base de Datos
+ Base de Datos
 
 Al activarse, el plugin crea la tabla:
 
@@ -58,7 +58,7 @@ INDEX role
 
 Esto garantiza rendimiento y evita duplicados.
 
-👤 Gestión de Roles
+ Gestión de Roles
 
 El plugin crea automáticamente el rol:
 
