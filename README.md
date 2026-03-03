@@ -2,7 +2,7 @@ Role Based Pricing Custom
 
 Plugin personalizado para WooCommerce que permite asignar precios específicos por rol de usuario, manteniendo el precio normal visible para visitantes y restringiendo las compras únicamente a usuarios registrados.
 
-📌 Descripción General
+ Descripción General
 
 Role Based Pricing Custom extiende WooCommerce agregando la funcionalidad de precios personalizados por rol de usuario.
 
@@ -28,7 +28,7 @@ PHP 7.4 o superior
 
 Base de datos MySQL
 
-📂 Estructura del Plugin
+ Estructura del Plugin
 role-based-pricing-custom/
 │
 ├── role-based-pricing-custom.php
@@ -66,8 +66,8 @@ Solidarista
 
 Este rol funciona igual que los demás roles de WordPress y puede recibir un precio personalizado.
 
-🖥 Uso del Plugin
-1️⃣ Asignar precios por rol
+ Uso del Plugin
+ Asignar precios por rol
 
 Ir a Productos → Editar producto
 
@@ -77,7 +77,7 @@ Ingresar los valores deseados para cada rol
 
 Guardar el producto
 
-2️⃣ Comportamiento del sistema
+ Comportamiento del sistema
 Usuario NO registrado:
 
 Ve el precio normal.
@@ -106,7 +106,7 @@ Carrito
 
 Checkout
 
-🔄 Flujo Técnico
+ Flujo Técnico
 Aplicación de precio
 
 Se utilizan los filtros:
@@ -147,12 +147,12 @@ template_redirect
 
 Se bloquea la compra a usuarios no autenticados y se redirige al login.
 
-📊 Comportamiento Final
+ Comportamiento Final
 Usuario	Precio visible	Puede comprar
 Visitante	Precio normal	❌ No
 Usuario sin precio especial	Precio normal	✅ Sí
 Usuario con precio por rol	Precio personalizado	✅ Sí
-🔐 Seguridad
+ Seguridad
 
 Uso de consultas preparadas ($wpdb->prepare)
 
@@ -162,7 +162,7 @@ Protección contra ejecución directa
 
 Separación modular de responsabilidades
 
-🚀 Posibles Mejoras Futuras
+ Posibles Mejoras Futuras
 
 Precio por porcentaje automático
 
