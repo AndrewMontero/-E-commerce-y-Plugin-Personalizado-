@@ -1,14 +1,18 @@
 <?php
-/**
- * @function register_activation_hook()
- * @function dbDelta()
- */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-function rbpc_create_table() {
+/*
+|--------------------------------------------------------------------------
+| Crear tabla y rol al activar plugin
+|--------------------------------------------------------------------------
+*/
+
+function rbpc_create_table()
+{
+
     global $wpdb;
 
     $table_name = $wpdb->prefix . 'role_prices';
@@ -20,11 +24,28 @@ function rbpc_create_table() {
         role VARCHAR(50) NOT NULL,
         price DECIMAL(10,2) NOT NULL,
         PRIMARY KEY (id),
-        KEY product_role (product_id, role)
+        UNIQUE KEY product_role_unique (product_id, role),
+        KEY product_index (product_id),
+        KEY role_index (role)
     ) $charset_collate;";
 
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
     dbDelta($sql);
-}
 
-register_activation_hook(__FILE__, 'rbpc_create_table');
+    /*
+    |--------------------------------------------------------------------------
+    | Crear rol Solidarista si no existe
+    |--------------------------------------------------------------------------
+    */
+
+    if (!get_role('solidarista')) {
+
+        add_role(
+            'solidarista',
+            'Solidarista',
+            array(
+                'read' => true
+            )
+        );
+    }
+}
